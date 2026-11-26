@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.io.*;
 /*
 Main class
 
@@ -9,6 +10,9 @@ This holds all of the UI elements, and the save/load features.
 I tried to group together all actions done to similar style
 components (all labels in one place, all text fields in one
 place, etc.) to increase readability.
+
+Commit 2: I added the save button, which uses PrintWriter
+to save to data file, data.txt
  */
 public static void main(String[] args) {
     //I chose to keep the container out of the UI
@@ -19,6 +23,7 @@ public static void main(String[] args) {
     //helps future-proof this by adding room for threading
     //if implemented in the future
     SwingUtilities.invokeLater(() -> {
+        //basic initialization and component creation
        Components.frame = new JFrame("Pokemon Database");
         Components.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Components.frame.setLayout(new BorderLayout());
@@ -26,6 +31,7 @@ public static void main(String[] args) {
 
 
         Components.panel = new JPanel(new FlowLayout());
+        Components.lowerPanel = new JPanel(new FlowLayout());
 
         Components.nameLabel = new JLabel("Name: ");
         Components.typeLabel = new JLabel("Type: ");
@@ -48,8 +54,9 @@ public static void main(String[] args) {
         DefaultListModel<String> model = new DefaultListModel<>();
         Components.cardsList = new JList<>(model);
         JScrollPane scrollPane = new JScrollPane(Components.cardsList);
+        //basic initialization and component creation
 
-
+        //buttons and listeners
         Components.addButton = new JButton("Add");
         Components.addButton.addActionListener(e -> {
             String name = Components.nameField.getText();
@@ -104,7 +111,38 @@ public static void main(String[] args) {
             }
         });
 
+        /*
+        This controls the save feature. I chose, instead
+        of making the card object serializable, to convert
+        the contents of each card into a string format,
+        then (later) reconstruct the cards by reading the
+        data file line by line (to be implemented). I did
+        this because I feel it is easier to do, and if need
+        be the user can go into the data.txt file and edit
+        what they need to themselves
+         */
+        Components.saveButton = new JButton("Save");
+        Components.saveButton.addActionListener(e -> {
+            try (PrintWriter out = new PrintWriter(new FileOutputStream("src/data.txt"), true)) {
+                for (int i = 0; i < container.size(); i++) {
+                    out.println(container.get(i).toData());
+                }
+            } catch (FileNotFoundException ex) {
+                /*
+                we print an error message to log instead of throwing
+                an exception. since saving isn't integral to the
+                actual visual structure of the app, and the app
+                can still run if the file for saving is not found,
+                we don't need to stop the entire program as this
+                can be ignored up to a certain point (though, saving
+                IS still a very important feature)
+                 */
+                System.out.println("cannot find file data.txt for saving");
+            }
+        });
+        //buttons and listeners
 
+        //adding components to panel/frame
         Components.panel.add(Components.nameLabel);
         Components.panel.add(Components.nameField);
         Components.panel.add(Components.typeLabel);
@@ -117,6 +155,8 @@ public static void main(String[] args) {
         Components.panel.add(Components.variantField);
         Components.panel.add(Components.addButton);
         Components.panel.add(Components.removeButton);
+
+        Components.lowerPanel.add(Components.saveButton);
 
         /*
         Here, I could have used any layout in order
@@ -131,6 +171,8 @@ public static void main(String[] args) {
          */
         Components.frame.add(Components.panel, BorderLayout.NORTH);
         Components.frame.add(scrollPane, BorderLayout.CENTER);
+        Components.frame.add(Components.lowerPanel, BorderLayout.SOUTH);
+        //adding components to panel/frame
 
         Components.frame.setVisible(true);
 

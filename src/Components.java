@@ -19,6 +19,9 @@ components that I am using.
 This is also similar to the style we used
 to code in CS180, thus another reason why
 I chose to do this - familiarity
+
+Commit 2: added a new panel for the lower
+save/load bar, and also added the save button
  */
 public class Components {
     public static JTextField nameField;
@@ -33,6 +36,8 @@ public class Components {
     public static JButton addButton;
     public static JButton removeButton;
 
+    public static JButton saveButton;
+
     public static JLabel nameLabel;
     public static JLabel typeLabel;
     public static JLabel damageLabel;
@@ -41,5 +46,6 @@ public class Components {
 
     public static JFrame frame;
     public static JPanel panel;
+    public static JPanel lowerPanel;
 
 }
