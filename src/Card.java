@@ -18,6 +18,10 @@ public class Card {
     However, I opted to make only one for
     simplicity's sake and addressed possible
     complications elsewhere.
+
+    Commit 2: added the toData function for
+    ease of converting card into a readable/writeable
+    format
      */
     public Card(String cN, String cT, String cD,
                 String cS, String cV) {
@@ -54,6 +58,12 @@ public class Card {
                 + cardDamage + ", Variant: " + cardVariant + ", Set: "
                 + cardSet;
     }
+
+    public String toData() {
+        return cardName + "," + cardType + "," + cardDamage + ","
+                + cardSet + "," + cardVariant;
+    }
+
 
 
 
