@@ -22,6 +22,9 @@ I chose to do this - familiarity
 
 Commit 2: added a new panel for the lower
 save/load bar, and also added the save button
+
+Commit 3: added the loadButton, which will act
+as the method as to which the user uses to save
  */
 public class Components {
     public static JTextField nameField;
@@ -37,6 +40,7 @@ public class Components {
     public static JButton removeButton;
 
     public static JButton saveButton;
+    public static JButton loadButton;
 
     public static JLabel nameLabel;
     public static JLabel typeLabel;

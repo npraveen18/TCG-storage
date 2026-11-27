@@ -15,9 +15,6 @@ Commit 2: I added the save button, which uses PrintWriter
 to save to data file, data.txt
  */
 public static void main(String[] args) {
-    //I chose to keep the container out of the UI
-    //thread, since this will be used later for saving/loading
-    //which shouldn't happen in the UI thread
     ArrayList<Card> container = new ArrayList<>();
     //Use an EDT to handle UI stuff. This
     //helps future-proof this by adding room for threading
@@ -54,7 +51,7 @@ public static void main(String[] args) {
         DefaultListModel<String> model = new DefaultListModel<>();
         Components.cardsList = new JList<>(model);
         JScrollPane scrollPane = new JScrollPane(Components.cardsList);
-        //basic initialization and component creation
+        //basic initialization and component creation - end
 
         //buttons and listeners
         Components.addButton = new JButton("Add");
@@ -116,14 +113,14 @@ public static void main(String[] args) {
         of making the card object serializable, to convert
         the contents of each card into a string format,
         then (later) reconstruct the cards by reading the
-        data file line by line (to be implemented). I did
+        data file line by line (now done). I did
         this because I feel it is easier to do, and if need
         be the user can go into the data.txt file and edit
         what they need to themselves
          */
         Components.saveButton = new JButton("Save");
         Components.saveButton.addActionListener(e -> {
-            try (PrintWriter out = new PrintWriter(new FileOutputStream("src/data.txt"), true)) {
+            try (PrintWriter out = new PrintWriter(new FileOutputStream("src/data.txt"))) {
                 for (int i = 0; i < container.size(); i++) {
                     out.println(container.get(i).toData());
                 }
@@ -140,7 +137,53 @@ public static void main(String[] args) {
                 System.out.println("cannot find file data.txt for saving");
             }
         });
-        //buttons and listeners
+
+
+        Components.loadButton = new JButton("Load");
+        Components.loadButton.addActionListener(e -> {
+            ArrayList<String> blueprintOfCards = new ArrayList<>();
+            try (BufferedReader in = new BufferedReader(new FileReader("src/data.txt"))) {
+                String input = in.readLine();
+                while (input != null) {
+                    blueprintOfCards.add(input);
+                    input = in.readLine();
+                }
+                /*
+                I chose to keep the same method of reading/writing
+                taught in CS180. Here, I clear the two lists that
+                hold the cards, container for the card objects and
+                model for the card display. I chose to do this because
+                it overall looks cleaner when the items loaded in
+                are the only ones populating the display, as opposed
+                to populating on top of unsaved cards that the user has
+                added. If the user wises to add cards, they can just
+                load, add their cards, then save.
+                 */
+                container.clear();
+                model.clear();
+            } catch (Exception ex) {
+                 System.out.println("failed to load data");
+            }
+
+            /*
+            I chose to create a new object each time, as it is
+            easy to re-sync an object whose instance fields
+            are merely strings. This allows me to avoid
+            dealing with complex readers, and just use the
+            simple BufferedReader
+             */
+            for (int i = 0; i < blueprintOfCards.size(); i++) {
+                String[] splitData = blueprintOfCards.get(i).split(",");
+                container.add(new Card(splitData[0], splitData[1], splitData[2], splitData[3], splitData[4]));
+            }
+
+            for (int i = 0; i < container.size(); i++) {
+                model.addElement(container.get(i).toString());
+            }
+        });
+
+
+        //buttons and listeners - end
 
         //adding components to panel/frame
         Components.panel.add(Components.nameLabel);
@@ -157,6 +200,7 @@ public static void main(String[] args) {
         Components.panel.add(Components.removeButton);
 
         Components.lowerPanel.add(Components.saveButton);
+        Components.lowerPanel.add(Components.loadButton);
 
         /*
         Here, I could have used any layout in order
@@ -172,7 +216,7 @@ public static void main(String[] args) {
         Components.frame.add(Components.panel, BorderLayout.NORTH);
         Components.frame.add(scrollPane, BorderLayout.CENTER);
         Components.frame.add(Components.lowerPanel, BorderLayout.SOUTH);
-        //adding components to panel/frame
+        //adding components to panel/frame - end
 
         Components.frame.setVisible(true);
 
