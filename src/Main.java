@@ -13,6 +13,13 @@ place, etc.) to increase readability.
 
 Commit 2: I added the save button, which uses PrintWriter
 to save to data file, data.txt
+
+Commit 3: Added the load button, which uses BufferedReader to
+clear the current list and populate it with content from
+the data file, data.txt
+
+Commit 4: Made the app load up the content in the data.txt
+file on app startup.
  */
 public static void main(String[] args) {
     ArrayList<Card> container = new ArrayList<>();
@@ -52,6 +59,27 @@ public static void main(String[] args) {
         Components.cardsList = new JList<>(model);
         JScrollPane scrollPane = new JScrollPane(Components.cardsList);
         //basic initialization and component creation - end
+
+        //load at start
+        ArrayList<String> presentWhileStart = new ArrayList<>();
+        try (BufferedReader in = new BufferedReader(new FileReader("src/data.txt"))) {
+            String input = in.readLine();
+            while (input != null) {
+                presentWhileStart.add(input);
+                input = in.readLine();
+            }
+        } catch (IOException e) {
+            //logic for this explained below
+            System.out.println("Failed to load at start");
+        }
+        for (int i = 0; i < presentWhileStart.size(); i++) {
+            String[] currentItem = presentWhileStart.get(i).split(",");
+            container.add(new Card(currentItem[0], currentItem[1], currentItem[2], currentItem[3], currentItem[4]));
+        }
+        for (int i = 0; i < container.size(); i++) {
+            model.addElement(container.get(i).toString());
+        }
+        //load at start - end
 
         //buttons and listeners
         Components.addButton = new JButton("Add");
